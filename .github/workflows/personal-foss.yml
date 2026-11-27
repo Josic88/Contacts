@@ -48,4 +48,9 @@ jobs:
             adb install app/build/outputs/apk/foss/debug/*-debug.apk
             adb shell pm path org.fossify.contacts | grep '^package:'
             adb shell pm path org.fossify.contacts.personal.debug | grep '^package:'
-            ./gradlew :app:connectedFossDebugAndroidTest
+            adb install app/build/outputs/apk/androidTest/foss/debug/*.apk
+            adb shell am instrument -w -r -e class org.fossify.contacts.VoicemailTest org.fossify.contacts.personal.debug.test/androidx.test.runner.AndroidJUnitRunner | tee "$RUNNER_TEMP/voicemail-tests.log"
+            grep -F 'INSTRUMENTATION_STATUS: test=togglesAggregateFromRawContactAndPersists' "$RUNNER_TEMP/voicemail-tests.log"
+            grep -F 'INSTRUMENTATION_STATUS: test=privateContactShowsUnavailable' "$RUNNER_TEMP/voicemail-tests.log"
+            grep -E '^OK \([1-9][0-9]* tests\)' "$RUNNER_TEMP/voicemail-tests.log"
+            ! grep -E '^INSTRUMENTATION_STATUS_CODE: -[1-9]' "$RUNNER_TEMP/voicemail-tests.log"
