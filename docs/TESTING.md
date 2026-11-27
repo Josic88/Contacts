@@ -31,5 +31,6 @@ Aucun accès root, ADB ou service Google n'est nécessaire pour ce protocole sur
 ## État des validations
 
 - Compilation du code officiel FOSS réussie dans le [job témoin](https://github.com/Josic88/Contacts/actions/runs/45999482076).
-- Les exécutions de la branche personnelle sont consultables dans [GitHub Actions](https://github.com/Josic88/Contacts/actions?query=branch%3Apersonal).
+- Le 27 novembre 2026, la [CI du commit d1363ae](https://github.com/Josic88/Contacts/actions/runs/46006456691) a compilé les éditions FOSS debug et release, exécuté Lint et vérifié la signature et le package de l’APK debug. Le runner Android a rapporté `OK (2 tests)` sur Android 15 / API 35. Les deux éditions (officielle 1.6.0 et personnelle debug) étaient installées simultanément.
+- Le scénario système a vérifié l’activation, la persistance et la désactivation, les deux numéros vus via PhoneLookup et le contact témoin. Le scénario privé a vérifié l’indisponibilité du réglage. La tâche de tests JVM a indiqué `NO-SOURCE`. La CI ne conserve ni APK ni clé de signature.
 - Essais radio sur le Pixel 7 et sur son opérateur à effectuer. Relever les résultats séparément pour les appels, la messagerie, les SMS et la désactivation.
