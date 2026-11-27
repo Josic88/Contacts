@@ -247,13 +247,8 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <provider
-            android:name=".contentproviders.MyContactsContentProvider"
-            android:authorities="org.fossify.commons.contactsprovider"
-            android:exported="true" />
-
         <activity-alias
-            android:name=".activities.SplashActivity.Red"
+            android:name="${launcherPackage}.activities.SplashActivity.Red"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_red"
@@ -267,7 +262,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Pink"
+            android:name="${launcherPackage}.activities.SplashActivity.Pink"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_pink"
@@ -281,7 +276,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Purple"
+            android:name="${launcherPackage}.activities.SplashActivity.Purple"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_purple"
@@ -295,7 +290,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Deep_purple"
+            android:name="${launcherPackage}.activities.SplashActivity.Deep_purple"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_deep_purple"
@@ -309,7 +304,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Indigo"
+            android:name="${launcherPackage}.activities.SplashActivity.Indigo"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_indigo"
@@ -323,7 +318,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Blue"
+            android:name="${launcherPackage}.activities.SplashActivity.Blue"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_blue"
@@ -337,7 +332,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Light_blue"
+            android:name="${launcherPackage}.activities.SplashActivity.Light_blue"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_light_blue"
@@ -351,7 +346,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Cyan"
+            android:name="${launcherPackage}.activities.SplashActivity.Cyan"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_cyan"
@@ -365,7 +360,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Teal"
+            android:name="${launcherPackage}.activities.SplashActivity.Teal"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_teal"
@@ -379,7 +374,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Green"
+            android:name="${launcherPackage}.activities.SplashActivity.Green"
             android:enabled="true"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
@@ -393,7 +388,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Light_green"
+            android:name="${launcherPackage}.activities.SplashActivity.Light_green"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_light_green"
@@ -407,7 +402,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Lime"
+            android:name="${launcherPackage}.activities.SplashActivity.Lime"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_lime"
@@ -421,7 +416,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Yellow"
+            android:name="${launcherPackage}.activities.SplashActivity.Yellow"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_yellow"
@@ -435,7 +430,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Amber"
+            android:name="${launcherPackage}.activities.SplashActivity.Amber"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_amber"
@@ -449,7 +444,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Orange"
+            android:name="${launcherPackage}.activities.SplashActivity.Orange"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_orange"
@@ -462,7 +457,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Deep_orange"
+            android:name="${launcherPackage}.activities.SplashActivity.Deep_orange"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_deep_orange"
@@ -476,7 +471,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Brown"
+            android:name="${launcherPackage}.activities.SplashActivity.Brown"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_brown"
@@ -490,7 +485,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Blue_grey"
+            android:name="${launcherPackage}.activities.SplashActivity.Blue_grey"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_blue_grey"
@@ -504,7 +499,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".activities.SplashActivity.Grey_black"
+            android:name="${launcherPackage}.activities.SplashActivity.Grey_black"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_grey_black"

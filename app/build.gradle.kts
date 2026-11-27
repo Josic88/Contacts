@@ -32,6 +32,7 @@ android {
 
     defaultConfig {
         applicationId = project.property("APP_ID").toString()
+        manifestPlaceholders["launcherPackage"] = project.property("APP_ID").toString()
         minSdk = project.libs.versions.app.build.minimumSDK.get().toInt()
         targetSdk = project.libs.versions.app.build.targetSDK.get().toInt()
         versionName = project.property("VERSION_NAME").toString()
@@ -114,7 +115,7 @@ android {
         )
     }
 
-    namespace = project.property("APP_ID").toString()
+    namespace = "org.fossify.contacts"
 
     lint {
         checkReleaseBuilds = false
