@@ -12,6 +12,11 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.RelativeLayout
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -41,6 +46,11 @@ class ViewContactActivity : ContactActivity() {
     private var duplicateInitialized = false
     private val mergeDuplicate: Boolean get() = config.mergeDuplicateContacts
     private val binding by viewBinding(ActivityViewContactBinding::inflate)
+
+    private var voicemailRead: Job? = null
+    private var voicemailTarget: Long? = null
+    private var savingVoicemail = false
+    private val voicemailItem get() = binding.contactToolbar.menu.findItem(R.id.calls_to_voicemail)
 
     companion object {
         private const val COMPARABLE_PHONE_NUMBER_LENGTH = 9
@@ -258,7 +268,78 @@ class ViewContactActivity : ContactActivity() {
 
         initializeDuplicateContacts {
             duplicateInitialized = true
+            setupVoicemailOption()
             setupContactDetails()
+        }
+    }
+
+    private fun setupVoicemailOption() {
+        if (isFinishing || isDestroyed) return
+        val current = contact ?: return
+        val unavailable = when {
+            current.isPrivate() -> R.string.voicemail_private
+            mergeDuplicate && duplicateContacts.any { it.isPrivate() || it.contactId != current.contactId } ->
+                R.string.voicemail_duplicates
+            current.contactId <= 0 -> R.string.voicemail_unavailable
+            else -> null
+        }
+
+        voicemailRead?.cancel()
+        voicemailTarget = if (unavailable == null) current.contactId.toLong() else null
+        voicemailItem.apply {
+            isVisible = true
+            isEnabled = false
+            isCheckable = false
+            setTitle(unavailable ?: R.string.calls_to_voicemail)
+        }
+
+        val id = voicemailTarget ?: return
+        if (savingVoicemail) return
+        voicemailRead = lifecycleScope.launch {
+            val option = withContext(Dispatchers.IO) {
+                try {
+                    VoicemailOption.read(contentResolver, id)
+                } catch (_: RuntimeException) {
+                    null
+                }
+            }
+            if (option == null) {
+                voicemailItem.setTitle(R.string.voicemail_unavailable)
+                return@launch
+            }
+            voicemailItem.apply {
+                isCheckable = true
+                isChecked = option.enabled
+                isEnabled = true
+                setOnMenuItemClickListener {
+                    changeVoicemailOption(id, option)
+                    true
+                }
+            }
+        }
+    }
+
+    private fun changeVoicemailOption(id: Long, option: VoicemailOption) {
+        if (savingVoicemail || voicemailTarget != id) return
+        savingVoicemail = true
+        voicemailItem.isEnabled = false
+        handlePermission(PERMISSION_WRITE_CONTACTS) { granted ->
+            lifecycleScope.launch {
+                if (granted && voicemailTarget == id) {
+                    val saved = withContext(Dispatchers.IO) {
+                        try {
+                            option.setEnabled(contentResolver, !option.enabled)
+                        } catch (_: RuntimeException) {
+                            false
+                        }
+                    }
+                    if (!saved) toast(R.string.voicemail_write_failed)
+                } else if (!granted) {
+                    toast(org.fossify.commons.R.string.no_contacts_permission)
+                }
+                savingVoicemail = false
+                setupVoicemailOption()
+            }
         }
     }
 

@@ -83,4 +83,9 @@
     <string name="postcode">Code postal</string>
     <string name="select_account">Sélectionner un compte</string>
     <string name="structured_addresses">Adresses structurées (modification)</string>
+    <string name="calls_to_voicemail">Renvoyer les appels vers la messagerie</string>
+    <string name="voicemail_private">Renvoi indisponible pour les contacts privés</string>
+    <string name="voicemail_duplicates">Ouvrez un seul contact pour régler le renvoi</string>
+    <string name="voicemail_unavailable">Réglage du renvoi indisponible</string>
+    <string name="voicemail_write_failed">Impossible de modifier le renvoi vers la messagerie</string>
 </resources>

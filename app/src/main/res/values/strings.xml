@@ -110,4 +110,9 @@
         Haven't found some strings? There's more at
         https://github.com/FossifyOrg/Commons/tree/master/commons/src/main/res
     -->
+    <string name="calls_to_voicemail">Send calls to voicemail</string>
+    <string name="voicemail_private">Voicemail unavailable for private contacts</string>
+    <string name="voicemail_duplicates">Open a single contact to change voicemail</string>
+    <string name="voicemail_unavailable">Voicemail setting unavailable</string>
+    <string name="voicemail_write_failed">Could not change the voicemail setting</string>
 </resources>
