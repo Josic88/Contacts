@@ -1,0 +1,41 @@
+name: Vérifier Contacts personnel
+
+on:
+  push:
+    branches: [personal]
+
+permissions:
+  contents: read
+
+jobs:
+  foss:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compiler les APK FOSS et exécuter les vérifications
+        run: |
+          ./gradlew :app:assembleFossDebug :app:assembleFossRelease :app:testFossDebugUnitTest :app:lintFossDebug :app:assembleFossDebugAndroidTest
+          apk=$(find app/build/outputs/apk/foss/debug -name '*.apk' -print -quit)
+          build_tools=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
+          "$build_tools/apksigner" verify --verbose --print-certs "$apk"
+          "$build_tools/aapt" dump badging "$apk" | grep "^package: name='org.fossify.contacts.personal.debug'"
+          sha256sum "$apk"
+      - name: Autoriser l'accélération KVM sur le runner
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Tester sur un émulateur AOSP vierge
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 35
+          target: default
+          arch: x86_64
+          script: ./gradlew :app:connectedFossDebugAndroidTest
