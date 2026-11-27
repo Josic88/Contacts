@@ -9,7 +9,7 @@ Utiliser un émulateur AOSP vierge (API 35 dans la CI) pour les tests instrument
 ./gradlew :app:connectedFossDebugAndroidTest
 ```
 
-`VoicemailTest` ouvre une véritable ViewContactActivity, active le menu depuis une fiche brute dont l'ID diffère de l'agrégat, vérifie le champ système et un contact témoin, rouvre la fiche et désactive le renvoi. Un second scénario ouvre une fiche privée et vérifie que le contrôle est indisponible. Le rapport instrumenté est sous `app/build/reports/androidTests/connected/`. Une tâche Gradle `NO-SOURCE` indique l'absence de tests pour cette tâche.
+`VoicemailTest` ouvre une véritable ViewContactActivity, active le menu depuis une fiche brute dont l'ID diffère de l'agrégat, vérifie le champ système et un contact témoin, rouvre la fiche et désactive le renvoi. Un second scénario ouvre une fiche privée et vérifie que le contrôle est indisponible. La CI installe aussi l’APK officiel FOSS 1.6.0 (empreinte vérifiée) à côté du fork sur l’émulateur. Les tests interrogent `PhoneLookup.SEND_TO_VOICEMAIL` pour les deux numéros de l’agrégat et un numéro témoin. Le rapport instrumenté est sous `app/build/reports/androidTests/connected/`. Une tâche Gradle `NO-SOURCE` indique l'absence de tests pour cette tâche.
 
 ## Essai téléphonique sur Pixel 7
 

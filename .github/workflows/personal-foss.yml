@@ -27,6 +27,11 @@ jobs:
           "$build_tools/apksigner" verify --verbose --print-certs "$apk"
           "$build_tools/aapt" dump badging "$apk" | grep "^package: name='org.fossify.contacts.personal.debug'"
           sha256sum "$apk"
+      - name: Récupérer la version officielle pour vérifier la coexistence
+        working-directory: ${{ runner.temp }}
+        run: |
+          curl --fail --location --silent --show-error --retry 3 -o contacts-official.apk https://github.com/FossifyOrg/Contacts/releases/download/1.6.0/contacts-13-foss-release.apk
+          echo '6a89be96b5ec39f5e2b11bd61dc7031f4b88261b324ab13af5743fbc62f0cddb  contacts-official.apk' | sha256sum -c -
       - name: Autoriser l'accélération KVM sur le runner
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -38,4 +43,9 @@ jobs:
           api-level: 35
           target: default
           arch: x86_64
-          script: ./gradlew :app:connectedFossDebugAndroidTest
+          script: |
+            adb install "$RUNNER_TEMP/contacts-official.apk"
+            adb install app/build/outputs/apk/foss/debug/*-debug.apk
+            adb shell pm path org.fossify.contacts | grep '^package:'
+            adb shell pm path org.fossify.contacts.personal.debug | grep '^package:'
+            ./gradlew :app:connectedFossDebugAndroidTest

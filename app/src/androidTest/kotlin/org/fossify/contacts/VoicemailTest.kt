@@ -9,9 +9,11 @@ import android.net.Uri
 import android.os.SystemClock
 import android.provider.ContactsContract
 import android.provider.ContactsContract.AggregationExceptions
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.CommonDataKinds.StructuredName
 import android.provider.ContactsContract.Contacts
 import android.provider.ContactsContract.Data
+import android.provider.ContactsContract.PhoneLookup
 import android.provider.ContactsContract.RawContacts
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
@@ -50,14 +52,18 @@ class VoicemailTest {
         if (privateRows.isNotEmpty()) LocalContactsHelper(context).deleteContactIds(privateRows)
     }
 
-    private fun addRaw(): Uri {
+    private fun addRaw(number: String): Uri {
         val ops = arrayListOf(
             ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
                 .withValue(RawContacts.ACCOUNT_TYPE, null).withValue(RawContacts.ACCOUNT_NAME, null).build(),
             ContentProviderOperation.newInsert(Data.CONTENT_URI)
                 .withValueBackReference(Data.RAW_CONTACT_ID, 0)
                 .withValue(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE)
-                .withValue(StructuredName.GIVEN_NAME, "Test-" + UUID.randomUUID()).build()
+                .withValue(StructuredName.GIVEN_NAME, "Test-" + UUID.randomUUID()).build(),
+            ContentProviderOperation.newInsert(Data.CONTENT_URI)
+                .withValueBackReference(Data.RAW_CONTACT_ID, 0)
+                .withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
+                .withValue(Phone.NUMBER, number).withValue(Phone.TYPE, Phone.TYPE_MOBILE).build()
         )
         return requireNotNull(resolver.applyBatch(ContactsContract.AUTHORITY, ops)[0].uri).also { rawRows.add(it) }
     }
@@ -67,6 +73,9 @@ class VoicemailTest {
             check(it.moveToFirst())
             it.getLong(0)
         }
+
+    private fun voicemailForNumber(number: String): Long =
+        column(PhoneLookup.CONTENT_FILTER_URI.buildUpon().appendPath(number).build(), PhoneLookup.SEND_TO_VOICEMAIL)
 
     private fun open(rawId: Int, privateContact: Boolean = false): ActivityScenario<ViewContactActivity> =
         ActivityScenario.launch(Intent(context, ViewContactActivity::class.java).apply {
@@ -95,9 +104,12 @@ class VoicemailTest {
     }
 
     @Test fun togglesAggregateFromRawContactAndPersists() {
-        val first = addRaw()
-        val second = addRaw()
-        val control = addRaw()
+        val firstNumber = "+12025550131"
+        val secondNumber = "+12025550132"
+        val controlNumber = "+12025550133"
+        val first = addRaw(firstNumber)
+        val second = addRaw(secondNumber)
+        val control = addRaw(controlNumber)
         resolver.update(AggregationExceptions.CONTENT_URI, ContentValues().apply {
             put(AggregationExceptions.TYPE, AggregationExceptions.TYPE_KEEP_TOGETHER)
             put(AggregationExceptions.RAW_CONTACT_ID1, ContentUris.parseId(first))
@@ -115,12 +127,17 @@ class VoicemailTest {
             waitForMenu(view) { it.isEnabled && it.isChecked }
             assertEquals(1L, column(target, Contacts.SEND_TO_VOICEMAIL))
             assertEquals(0L, column(other, Contacts.SEND_TO_VOICEMAIL))
+            assertEquals(1L, voicemailForNumber(firstNumber))
+            assertEquals(1L, voicemailForNumber(secondNumber))
+            assertEquals(0L, voicemailForNumber(controlNumber))
         }
         open(rawId).use { view ->
             waitForMenu(view) { it.isEnabled && it.isChecked }
             toggle(view)
             waitForMenu(view) { it.isEnabled && it.isCheckable && !it.isChecked }
             assertEquals(0L, column(target, Contacts.SEND_TO_VOICEMAIL))
+            assertEquals(0L, voicemailForNumber(firstNumber))
+            assertEquals(0L, voicemailForNumber(secondNumber))
         }
     }
 
