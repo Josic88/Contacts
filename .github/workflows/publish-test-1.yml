@@ -1,0 +1,33 @@
+name: Publier la première préversion de test
+on:
+  push:
+    branches: [publication/test-1]
+    paths: [.github/workflows/publish-test-1.yml]
+permissions:
+  contents: write
+jobs:
+  publish:
+    if: github.repository == 'Josic88/Contacts'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: e2f8e0de501e2bbf79ef5c746f496b2a899d1dec
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: |
+          ./gradlew --no-daemon :app:assembleFossDebug
+          cp app/build/outputs/apk/foss/debug/*-debug.apk contacts-personal-test-1.apk
+          tools=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
+          "$tools/apksigner" verify --verbose --print-certs contacts-personal-test-1.apk
+          "$tools/aapt" dump badging contacts-personal-test-1.apk | grep "^package: name='org.fossify.contacts.personal.debug'"
+          sha256sum contacts-personal-test-1.apk > SHA256SUMS
+      - name: Publier la préversion vérifiée
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create personal-test-1 contacts-personal-test-1.apk SHA256SUMS --target e2f8e0de501e2bbf79ef5c746f496b2a899d1dec --prerelease --title "Contacts personnel · première version de test" --notes "APK FOSS de test pour installation à côté de Fossify Contacts officiel. Dans la fiche d’un contact système, ouvrir le menu et cocher « Renvoyer les appels vers la messagerie ». Signature debug temporaire. Cette édition sert aux essais sur le Pixel. La future édition durable utilisera un package et une signature distincts. Les appels réels et les SMS restent à valider sur le réseau de l’opérateur."
