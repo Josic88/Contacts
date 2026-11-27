@@ -1,0 +1,27 @@
+name: Compilation FOSS de référence
+
+on:
+  push:
+    branches: [ci-foss]
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: f7254a0845e1227a1e52dd08ebf3cd2bac852d4c
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compiler le commit officiel sans signature personnelle
+        run: |
+          git rev-parse HEAD
+          ./gradlew --no-daemon :app:assembleFossRelease
+          sha256sum app/build/outputs/apk/foss/release/*.apk
